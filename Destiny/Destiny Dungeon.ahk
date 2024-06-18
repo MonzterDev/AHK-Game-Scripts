@@ -8,91 +8,156 @@ CHAR_2_POS := {x:1200, y:650}
 
 SELECTED_CHAR := CHAR_1_POS
 
+FARMING_CHAR := "Hunter"
+CHECKPOINT_CHAR := "Hunter"
+FRIEND_NAME := "Panda"
+
+; 1. Switch character
+; 2. Load into dungeon
+; 3. Wait for player to join
+; 4. Switch back to main character
+; 5. Join friend
+
 F3::
 {
+    SwitchCharacter(CHECKPOINT_CHAR)
+    Sleep(2000)
+
+    Send("{m Down}")
+    Sleep(10)
+    Send("{m Up}") ; Open map
+    ; Sleep(100)
     ; Send("{m Down}")
     ; Sleep(10)
     ; Send("{m Up}") ; Open map
-    ; Sleep(1200)
+    Sleep(3000)
 
-    ; MouseClick("Left", 1430, 280, , , "Down") ; Click Eternity
-    ; Sleep(200)
-    ; MouseClick("Left", 1430, 280, , , "Up")
-    ; Sleep(1200)
+    SelectPlanet("ETERNITY")
+    Sleep(3000)
 
-    ; MouseClick("Left", 550, 600, , , "Down") ; Click GoA
-    ; Sleep(100)
-    ; MouseClick("Left", 550, 600, , , "Up")
-    ; Sleep(1200)
+    MouseClick("Left", 550, 600, , , "Down") ; Click GoA
+    Sleep(100)
+    MouseClick("Left", 550, 600, , , "Up")
+    Sleep(100)
+    MouseClick("Left", 550, 600, , , "Down") ; Click GoA
+    Sleep(100)
+    MouseClick("Left", 550, 600, , , "Up")
+    Sleep(1700)
 
-    ; MouseClick("Left", 1555, 820, , , "Down") ; Change mode
-    ; Sleep(100)
-    ; MouseClick("Left", 1555, 820, , , "Up")
-    ; Sleep(1000)
+    MouseClick("Left", 1555, 820, , , "Down") ; Change mode
+    Sleep(100)
+    MouseClick("Left", 1555, 820, , , "Up")
+    Sleep(100)
+    MouseClick("Left", 1555, 820, , , "Down") ; Change mode
+    Sleep(100)
+    MouseClick("Left", 1555, 820, , , "Up")
+    Sleep(1700)
 
-    ; MouseClick("Left", 350, 350, , , "Down") ; Select Master
-    ; Sleep(100)
-    ; MouseClick("Left", 350, 350, , , "Up")
-    ; Sleep(1000)
+    MouseClick("Left", 350, 350, , , "Down") ; Select Master
+    Sleep(100)
+    MouseClick("Left", 350, 350, , , "Up")
+    Sleep(100)
+    MouseClick("Left", 350, 350, , , "Down") ; Select Master
+    Sleep(100)
+    MouseClick("Left", 350, 350, , , "Up")
+    Sleep(1000)
 
-    ; MouseClick("Left", 1550, 888, , , "Down") ; Launch
-    ; Sleep(100)
-    ; MouseClick("Left", 1550, 888, , , "Up")
-    ; Sleep(1000)
+    MouseClick("Left", 1550, 888, , , "Down") ; Launch
+    Sleep(100)
+    MouseClick("Left", 1550, 888, , , "Up")
+    Sleep(100)
+    MouseClick("Left", 1550, 888, , , "Down") ; Launch
+    Sleep(100)
+    MouseClick("Left", 1550, 888, , , "Up")
+    Sleep(1000)
 
-    ; while (true)
-    ; {
-    ;     OCRText := OCR.FromRect(1240, 980, 205, 35, "", scale:=1).Text  ; Specify language as needed, replace "" if different
+    while (true)
+    {
+        OCRText := OCR.FromRect(1240, 980, 205, 35, , scale:=1).Text  ; Specify language as needed, replace "" if different
 
-    ;     if (InStr(OCRText, "PLAYER"))
-    ;     {
-    ;         ToolTip("FOUND PLAYER")
-    ;         break  ; Exit loop when the condition is met
-    ;     }
+        ToolTip(OCRText)
 
-    ;     if (InStr(OCRText, "JOINED"))
-    ;     {
-    ;         ToolTip("FOUND JOINED")
-    ;         break  ; Exit loop when the condition is met
-    ;     }
+        if (InStr(OCRText, "PLAYER"))
+        {
+            ToolTip("FOUND PLAYER")
+            break  ; Exit loop when the condition is met
+        }
 
-    ;     Sleep(250)
-    ; }
+        if (InStr(OCRText, "JOINED"))
+        {
+            ToolTip("FOUND JOINED")
+            break  ; Exit loop when the condition is met
+        }
+
+        Sleep(100)
+    }
 
     ; ; We know a player has joined, so we can now proceed with the rest of the script
+    SwitchCharacter(FARMING_CHAR)
+    Sleep(2000)
 
-    ;; Change characters
+    MouseClick("Left", 1300, 1025, , , "Down")
+    Sleep(100)
+    MouseClick("Left", 1300, 1025, , , "Up") ; Open friends
+    Sleep(100)
+    MouseClick("Left", 1300, 1025, , , "Down")
+    Sleep(100)
+    MouseClick("Left", 1300, 1025, , , "Up") ; Open friends
+    Sleep(500)
 
-    ; Send("{Esc Down}")
-    ; Sleep(10)
-    ; Send("{Esc Up}") ; Open escape menu
-    ; Sleep(1200)
+    while (true)
+        {
+            result := OCR.FromWindow("Destiny 2", , scale:=1)
 
-    ; MouseClick("Left", 800, 600, , , "Down") ; Change character
-    ; Sleep(100)
-    ; MouseClick("Left", 800, 600, , , "Up")
-    ; Sleep(1000)
-    ; Send("{Enter Down}")
-    ; Sleep(10)
-    ; Send("{Enter Up}")
-    ; Sleep(5000)
+            if (InStr(result.Text, FRIEND_NAME))
+            {
+                Sleep(500)
+                result.Click(result.FindString(FRIEND_NAME))
+                Sleep(50)
+                result.Click(result.FindString(FRIEND_NAME))
+                break  ; Exit loop when the condition is met
+            }
+            Sleep(50)
+        }
+    Sleep(750)
 
-    ; MouseClick("Left", SELECTED_CHAR.x, SELECTED_CHAR.y, , , "Down") ; Select character
-    ; Sleep(100)
-    ; MouseClick("Left", SELECTED_CHAR.x, SELECTED_CHAR.y, , , "Up")
-    ; Sleep(1000)
-
-
-    ;; Rejoin player
-
-    ; FriendFound := OCR.FromWindow("Destiny 2", , scale:=1)
-    ; try found := FriendFound.FindString("Hunter")
-    ; FriendFound.Click(FriendFound.FindString("Hunter"))
-    ; ToolTip(FriendFound)
-
-    SelectPlanet("EDZ")
+    result := OCR.FromWindow("Destiny 2", , scale:=1)
+    result.Click(result.FindString("Join"))
 }
 return
+
+SwitchCharacter(character := "Hunter") {
+    Send("{Esc Down}")
+    Sleep(10)
+    Send("{Esc Up}") ; Open escape menu
+    Sleep(1500)
+
+    result := OCR.FromWindow("Destiny 2", , scale:=1)
+    ;; While until the result find string is found
+    result.Click(result.FindString("Change Character"))
+    Sleep(50)
+    result.Click(result.FindString("Change Character"))
+    Sleep(50)
+    result.Click(result.FindString("Change Character"))
+    Sleep(50)
+
+    Send("{Enter Down}")
+    Sleep(10)
+    Send("{Enter Up}") ; Return to character select
+    Sleep(5000)
+
+    while (true)
+        {
+            result := OCR.FromWindow("Destiny 2", , scale:=1)
+
+            if (InStr(result.Text, character))
+            {
+                SelectCharacter(character)
+                break  ; Exit loop when the condition is met
+            }
+            Sleep(50)
+        }
+}
 
 SelectCharacter(character := "Hunter") {
     ; Define a list of valid classes
@@ -134,11 +199,14 @@ SelectPlanet(planet := "ROME") {
     result := OCR.FromWindow("Destiny 2", , scale:=1)  ; Ensure parameter placeholders are correct
 
     textLocation := ""
-    for line in result.Lines {
-        if (InStr(line.Text, planet)) {
-            textLocation := [line.x - 30, line.y]
-            break
+    while (textLocation == "") {
+        for line in result.Lines {
+            if (InStr(line.Text, planet)) {
+                textLocation := [line.x - 30, line.y]
+                break
+            }
         }
+        Sleep(100)
     }
 
     MouseClick("Left", textLocation[1], textLocation[2], , , "Down")  ; Click on the planet MouseClick(" MouseClick("
