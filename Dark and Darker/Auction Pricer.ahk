@@ -5,9 +5,9 @@
 
 ; https://github.com/MonzterDev/AHK-Game-Scripts
 
-F3::
+`::
 {
-    ocrResult := OCR.FromRect(1333, 140, 577, 890, , scale:=1).Text  ; Scans Stash area in auction window for item
+    ocrResult := OCR.FromRect(3000, 310, 1200, 1400, , scale:=1.5).Text ; Scans Stash area in auction window for item
 
     rarity := GetItemRarity(ocrResult)
     itemName := GetItemName(ocrResult)
@@ -23,48 +23,51 @@ F3::
     ; We could use OCR for most of the following steps.
 
     ; Now we swap to view market tab
-    MouseClick("Left", 850, 115, ,) ; View Market button
+    MouseClick("Left", 1576, 156, ,) ; View Market button
     Sleep(500)
 
-    MouseClick("Left", 1785, 200, ,) ; Reset Filters button
+    MouseClick("Left", 2823, 271, ,) ; Reset Filters button
     Sleep(400)
 
-    MouseClick("Left", 400, 200, , ) ; Click rarity selection
+    MouseClick("Left", 952, 275, , ) ; Click rarity selection
     Sleep(100)
     if (rarity = "Uncommon") {
-        MouseClick("Left", 400, 325, , ) ; Click rarity
+        MouseClick("Left", 904, 440, , ) ; Click rarity
     } else if (rarity = "Rare") {
-        MouseClick("Left", 400, 350, , ) ; Click rarity
-    } else if (rarity = "Epic") {
-        MouseClick("Left", 400, 375, , ) ; Click rarity
+        MouseClick("Left", 909, 475, , ) ; Click rarity
+    } else if (rarity = "Epic") { 
+        MouseClick("Left", 947, 510, , ) ; Click rarity
     } else if (rarity = "Legend") {
-        MouseClick("Left", 400, 400, , ) ; Click rarity
+        MouseClick("Left", 948, 539, , ) ; Click rarity
     } else if (rarity = "Unique") {
-        MouseClick("Left", 400, 425, , ) ; Click rarity
+        MouseClick("Left", 926, 580, , ) ; Click rarity
     }
     Sleep(100)
 
-    MouseClick("Left", 150, 200, , ) ; Click item name selection
+
+    MouseClick("Left", 777, 270, , ) ; Click item name reset
     Sleep(100)
-    MouseClick("Left", 150, 250, , ) ; Click item name search box
+    MouseClick("Left", 626, 274, , ) ; Click item name selection
+    Sleep(100)
+    MouseClick("Left", 560, 324, , ) ; Click item name search box
     Sleep(200)
     Send(itemName) ; Type item name
-    Sleep(100)
-    MouseClick("Left", 150, 275, , ) ; Click item name
+    Sleep(150)
+    MouseClick("Left", 592, 371, , ) ; Click item name
     Sleep(100)
 
 
-    MouseClick("Left", 1500, 200, , ) ; Click random attributes
+    MouseClick("Left", 2493, 274, , ) ; Click random attributes
     Sleep(100)
-    MouseClick("Left", 1500, 250, , ) ; Click enchantment name search box
+    MouseClick("Left", 2503, 325, , ) ; Click enchantment name search box
     Sleep(250)
     Send("^a{BS}") ; Clear textbox
     Sleep(100)
     Send(enchantment) ; Type enchantment name
     Sleep(100)
-    MouseClick("Left", 1500, 275, , ) ; Click enchantment name
+    MouseClick("Left", 2503, 371, , ) ; Click enchantment name
     Sleep(100)
-    MouseClick("Left", 1800, 275, , ) ; Click search
+    MouseClick("Left", 2828, 369, , ) ; Click search
 }
 
 
