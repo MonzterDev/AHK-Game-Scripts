@@ -6,7 +6,7 @@ This script is used to easily price items on the marketplace. It grabs a selecte
 
 ### How to use
 
-1. Download and run the script
+1. Download the `Auction Pricer.exe` file from the [releases](https://github.com/MonzterDev/AHK-Game-Scripts/releases/) page and run it
 2. Go to the marketplace and select the "My Listings" tab
 3. Hover over the item you want to price (Must be inside the Stash section)
 4. Press the hotkey (Default is `F3`)
@@ -22,7 +22,7 @@ This script is used to bind Druid forms to keys and instantly swap between them.
 
 ### How to Use
 
-1. Download and run the script
+1. Download the `Druid Swap Keybinds.exe` file from the [releases](https://github.com/MonzterDev/AHK-Game-Scripts/releases/) page and run it
 2. Start a game while playing Druid
 3. Use any of the hotkeys to tranform
 
