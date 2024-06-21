@@ -1,3 +1,7 @@
+## Discord
+
+Feel free to join our [Discord](https://discord.gg/BXRG84wEPW) community to discuss developing macros for Dark and Darker!
+
 ## Auction Pricer
 
 ![Auction Pricer video](../Media/D&D%20Auction%20Pricer.gif)
