@@ -1,6 +1,6 @@
 #SingleInstance force
 #Requires AutoHotkey v2.0+
-#include ..\Libs\OCR.ahk ; https://github.com/Descolada/OCR
+#include .\OCR.ahk ; https://github.com/Descolada/OCR
 #include .\Helper.ahk
 
 ; https://github.com/MonzterDev/AHK-Game-Scripts
@@ -8,16 +8,16 @@
 F3::
 {
     ocrResult := OCR.FromRect(1333, 140, 577, 890, , scale:=1).Text  ; Scans Stash area in auction window for item
-
+    ;ToolTip(ocrResult)
     rarity := GetItemRarity(ocrResult)
     itemName := GetItemName(ocrResult)
-
+    ;Sleep(100000)
     if (itemName = "") {
         ToolTip("Item not found, try again.")
         return
     }
 
-    enchantment := GetItemEnchantments(ocrResult)
+    enchantmentArr := GetItemEnchantments(ocrResult)
 
     ; TODO
     ; We could use OCR for most of the following steps.
@@ -52,17 +52,22 @@ F3::
     Sleep(100)
     MouseClick("Left", 150, 275, , ) ; Click item name
     Sleep(100)
-
-
     MouseClick("Left", 1500, 200, , ) ; Click random attributes
     Sleep(100)
-    MouseClick("Left", 1500, 250, , ) ; Click enchantment name search box
-    Sleep(250)
-    Send("^a{BS}") ; Clear textbox
-    Sleep(100)
-    Send(enchantment) ; Type enchantment name
-    Sleep(100)
-    MouseClick("Left", 1500, 275, , ) ; Click enchantment name
+    for index, enchantmentL in enchantmentArr {
+        MouseClick("Left", 1500, 250, , ) ; Click enchantment name search box
+        Sleep(250)
+        ;Send("^a{BS}") ; Clear textbox
+        ;Sleep(100)
+        Send(enchantmentL) ; Type enchantment name
+        Sleep(100)
+        enchantmentPos := (index * 25) + (250)
+        ;ToolTip("" . enchantmentPos)
+        ;Sleep(1000)
+        MouseClick("Left", 1500, enchantmentPos, , ) ; Click enchantment name
+        Sleep(100)
+    }
+
     Sleep(100)
     MouseClick("Left", 1800, 275, , ) ; Click search
 }
@@ -133,8 +138,9 @@ GetItemEnchantments(ocrResult) {
                 enchantmentsText .= ", "
             }
         }
-        ; ToolTip(itemName . " " . rarity . " (" . enchantmentsText . ")") ; Easy debug
+        ;ToolTip(enchantmentsFound) ; Easy debug
+        ;sleep(50000)
     }
 
-    return enchantment
+    return enchantmentsFound
 }
