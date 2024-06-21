@@ -37,7 +37,9 @@ ENCHANTMENTS := [
     "Memory Capacity Add",
     "Memory Capacity Bonus",
     "Luck",
-    "Additional Weapon Damage"
+    "Additional Weapon Damage",
+    "Max Health",
+    "Armor Rating"
 ]
 
 ITEMS := [
@@ -282,5 +284,30 @@ ITEMS := [
     "Splendid Cloak",
     "Tattered Cloak",
     "Vigilant Cloak",
-    "Watchman Cloak"
+    "Watchman Cloak",
+
+    "Ring of Courage",
+    "Ring of Quickness",
+    "Ring of Resolve",
+    "Ring of Vitality",
+    "Ring of Wisdom",
+    "Ring of Finesse",
+    "Ring of Survival",
+    "Grimsmile Ring",
+
+    "Badger Pendant",
+    "Bear Pendant",
+    "Fangs of Death Necklace",
+    "Fox Pendant",
+    "Frost Amulet",
+    "Monkey Pendant",
+    "Necklace of Peace",
+    "Owl Pendant",
+    "Ox Pendant",
+    "Pheonix Choker",
+    "Rat Pendant",
+    "Torq of Soul",
+    "Wind Locket",
+
+    "Lockpick"
     ]
