@@ -5,8 +5,10 @@
 
 ; https://github.com/MonzterDev/AHK-Game-Scripts
 
-F3::
-{
+F3::HandleAuctionSearch()
+F4::HandleAuctionSearchSimple()
+
+HandleAuctionSearch() {
     ocrResult := OCR.FromRect(1777, 187, 769, 1187, , scale:=1).Text  ; Scans Stash area in auction window for item
 
     rarity := GetItemRarity(ocrResult)
@@ -23,50 +25,42 @@ F3::
     ]
 
     if (itemName = "") {
-        ToolTip("Item not found, try again.")
-        SetTimer RemoveToolTip, -2000 ; Set timer to remove tooltip after 2 seconds
+        ShowTemporaryToolTip("Item not found, try again.", 2000)
         return
     }
 
-
-
     ; Now we swap to view market tab
-    MouseClick("Left", 1133, 153, ,) ; View Market button
+    MouseClick("Left", 1133, 153) ; View Market button
     Sleep(500)
 
-    MouseClick("Left", 2380, 267, ,) ; Reset Filters button
+    MouseClick("Left", 2380, 267) ; Reset Filters button
     Sleep(400)
 
-    MouseClick("Left", 533, 267, , ) ; Click rarity selection
+    MouseClick("Left", 533, 267) ; Click rarity selection
     Sleep(100)
 
     ClickItemRarity(rarity)
     Sleep(100)
 
-    MouseClick("Left", 200, 267, , ) ; Click item name selection
+    MouseClick("Left", 200, 267) ; Click item name selection
     Sleep(100)
-    MouseClick("Left", 200, 333, , ) ; Click item name search box
+    MouseClick("Left", 200, 333) ; Click item name search box
     Send(itemName) ; Type item name
     Sleep(100)
+
     for each, rect in coordinates {
         ; Perform OCR on the current rectangle
         ocrResult := OCR.FromRect(rect.x, rect.y, rect.width, rect.height, , scale:=1).Text
 
-        ;Print the text found within the rectangle (for debug)
-        ;MsgBox("Text found in rectangle at Y=" rect.y ": " ocrResult)
-
         ; Check if the text matches the itemName
         if (ocrResult = itemName) {
-            ;MsgBox("Exact match found: " ocrResult) ;this is for debug also
-
             ; Perform a left-click 15 pixels below the exact match found
             MouseClick("Left", rect.x + (rect.width // 2), rect.y + 15 + (rect.height // 2))
-
             break
         }
     }
 
-    MouseClick("Left", 2000, 267, , ) ; Click random attributes
+    MouseClick("Left", 2000, 267) ; Click random attributes
     Sleep(100)
     MouseClick("Left", 2000, 322) ; Click enchantment name search box
     Sleep(250)
@@ -75,7 +69,6 @@ F3::
 
     ; Loop through enchantments and send each one
     enchantmentYValue := 370
-
     for enchantment in enchantments {
         Send(enchantment)
         Sleep(100)
@@ -87,13 +80,13 @@ F3::
         enchantmentYValue += 35
     }
 
-
-
-
-
-
     Sleep(100)
-    MouseClick("Left", 2400, 367, , ) ; Click search
+    MouseClick("Left", 2400, 367) ; Click search
+}
+
+ShowTemporaryToolTip(text, duration) {
+    ToolTip(text)
+    SetTimer RemoveToolTip, -duration
 }
 
 RemoveToolTip() {
@@ -101,75 +94,65 @@ RemoveToolTip() {
 }
 
 GetItemRarity(ocrResult) {
-    rarity := ""
-    if InStr(ocrResult, "Uncommon") {
-        rarity := "Uncommon"
-    } else if InStr(ocrResult, "Common") {
-        rarity := "Common"
-    } else if InStr(ocrResult, "Rare") {
-        rarity := "Rare"
-    } else if InStr(ocrResult, "Epic") {
-        rarity := "Epic"
-    } else if InStr(ocrResult, "Legend") {
-        rarity := "Legend"
-    } else if InStr(ocrResult, "Unique") {
-        rarity := "Unique"
+    rarities := ["Uncommon", "Common", "Rare", "Epic", "Legend", "Unique"]
+    for each, rarity in rarities {
+        if InStr(ocrResult, rarity) {
+            return rarity
+        }
     }
-
-    return rarity
+    return ""
 }
 
 ClickItemRarity(rarity) {
-    if (rarity = "Uncommon") {
-        MouseClick("Left", 533, 433, , ) ; Click rarity
-    } else if (rarity = "Common") {
-        MouseClick("Left", 533, 399, , ) ; Click rarity
-    } else if (rarity = "Rare") {
-        MouseClick("Left", 533, 467, , ) ; Click rarity
-    } else if (rarity = "Epic") {
-        MouseClick("Left", 533, 500, , ) ; Click rarity
-    } else if (rarity = "Legend") {
-        MouseClick("Left", 533, 533, , ) ; Click rarity
-    } else if (rarity = "Unique") {
-        MouseClick("Left", 533, 567, , ) ; Click rarity
-    }
+    positions := Map()
+    positions["Uncommon"] := 433
+    positions["Common"] := 399
+    positions["Rare"] := 467
+    positions["Epic"] := 500
+    positions["Legend"] := 533
+    positions["Unique"] := 567
+    MouseClick("Left", 533, positions[rarity])
 }
 
 GetItemName(ocrResult) {
-    itemName := ""
-    ; TODO
-    ; I tried using a while loop here because sometimes the OCR cannot detect the text.
-    ; This didn't actually solve the issue. For now, just use hotkey again.
-    while (itemName = "" && A_Index <= 3) {
-        for i, item in ITEMS {
-            if InStr(ocrResult, item) {
-                itemName := item
-                break
-            }
-        }
-
-        if (itemName = "") {
-            Sleep(100)
+    global ITEMS
+    for each, item in ITEMS {
+        if InStr(" " ocrResult " ", " " item " ") {
+            return item
         }
     }
-
-    return itemName
+    return ""
 }
 
 GetItemEnchantments(ocrResult) {
+    global ENCHANTMENTS
     enchantmentsFound := []
+
+    ; Add spaces around the OCR result to ensure word boundaries
+    ocrResult := " " ocrResult " "
 
     ; Locate the first "+" symbol in the OCR result
     plusPos := InStr(ocrResult, "+")
-
+    
     ; If "+" is found, start looking for enchantments after this position
     if (plusPos > 0) {
         ocrResult := SubStr(ocrResult, plusPos + 1)
 
-        for enchantmentI in ENCHANTMENTS {
-            ; Make the search case-sensitive
-            if InStr(ocrResult, enchantmentI, true) {
-                enchantmentsFound.Push(enchantmentI)
+        ; Check for specific enchantments first and ignore "Max Health" if "Max Health Bonus" is present
+        specificEnchantments := ["Max Health Bonus"]
+        for each, specific in specificEnchantments {
+            if InStr(ocrResult, " " specific " ") {
+                enchantmentsFound.Push(specific)
+                ; Remove specific enchantments from the OCR result to avoid double matching
+                ocrResult := StrReplace(ocrResult, " " specific " ", " ")
+            }
+        }
+
+        ; Check for other enchantments
+        for each, enchantment in ENCHANTMENTS {
+            ; Ensure exact match by using a regular expression with word boundaries
+            if RegExMatch(ocrResult, "\b" . RegExReplace(enchantment, " ", "\s") . "\b") {
+                enchantmentsFound.Push(enchantment)
             }
         }
     }
@@ -177,8 +160,8 @@ GetItemEnchantments(ocrResult) {
     return enchantmentsFound
 }
 
-F4::
-{
+HandleAuctionSearchSimple() {
+    ; Simplified version of HandleAuctionSearch for F4
     ocrResult := OCR.FromRect(1777, 187, 769, 1187, , scale:=1).Text  ; Scans Stash area in auction window for item
 
     rarity := GetItemRarity(ocrResult)
@@ -194,48 +177,42 @@ F4::
     ]
 
     if (itemName = "") {
-        ToolTip("Item not found, try again.")
-        SetTimer RemoveToolTip, -2000 ; Set timer to remove tooltip after 2 seconds
+        ShowTemporaryToolTip("Item not found, try again.", 2000)
         return
     }
 
     ; Now we swap to view market tab
-    MouseClick("Left", 1133, 153, ,) ; View Market button
+    MouseClick("Left", 1133, 153) ; View Market button
     Sleep(500)
 
-    MouseClick("Left", 2380, 267, ,) ; Reset Filters button
+    MouseClick("Left", 2380, 267) ; Reset Filters button
     Sleep(400)
 
-    MouseClick("Left", 533, 267, , ) ; Click rarity selection
+    MouseClick("Left", 533, 267) ; Click rarity selection
     Sleep(100)
 
     ClickItemRarity(rarity)
     Sleep(100)
 
-    MouseClick("Left", 200, 267, , ) ; Click item name selection
+    MouseClick("Left", 200, 267) ; Click item name selection
     Sleep(100)
-    MouseClick("Left", 200, 333, , ) ; Click item name search box
+    MouseClick("Left", 200, 333) ; Click item name search box
     Send(itemName) ; Type item name
     Sleep(100)
+
     for each, rect in coordinates {
         ; Perform OCR on the current rectangle
         ocrResult := OCR.FromRect(rect.x, rect.y, rect.width, rect.height, , scale:=1).Text
 
-        ; Print the text found within the rectangle (for debug)
-        ; MsgBox("Text found in rectangle at Y=" rect.y ": " ocrResult)
-
         ; Check if the text matches the itemName
         if (ocrResult = itemName) {
-            ; MsgBox("Exact match found: " ocrResult) ; this is for debug also
-
             ; Perform a left-click 15 pixels below the exact match found
             MouseClick("Left", rect.x + (rect.width // 2), rect.y + 15 + (rect.height // 2))
-
             break
         }
     }
 
-    MouseClick("Left", 2000, 267, , ) ; Click random attributes
+    MouseClick("Left", 2000, 267) ; Click random attributes
     Sleep(100)
     MouseClick("Left", 2000, 322) ; Click enchantment name search box
     Sleep(250)
@@ -243,5 +220,5 @@ F4::
     Sleep(100)
 
     Sleep(100)
-    MouseClick("Left", 2400, 367, , ) ; Click search
+    MouseClick("Left", 2400, 367) ; Click search
 }
